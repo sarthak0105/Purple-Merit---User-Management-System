@@ -18,8 +18,21 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`dark ${inter.variable}`}>
-      <body className={`${inter.className} antialiased`} style={{ background: '#060d12' }}>
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
+      {/* Inline script to apply saved theme before first paint — prevents flash */}
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `
+          (function() {
+            try {
+              var t = localStorage.getItem('theme');
+              if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+              }
+            } catch(e) {}
+          })();
+        `}} />
+      </head>
+      <body className={`${inter.className} antialiased`}>
         <AuthProvider>
           {children}
         </AuthProvider>

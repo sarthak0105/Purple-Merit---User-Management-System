@@ -1,67 +1,53 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Navbar } from '@/components/layout/Navbar';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const [menuState, setMenuState] = useState<'full' | 'collapsed' | 'hidden'>('full');
+  const [isHovered, setIsHovered] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
+      if (mobile) setMenuState('hidden');
+      else setMenuState('full');
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const getMarginLeft = () => {
+    if (isMobile) return '0';
+    if (menuState === 'hidden') return '0';
+    if (menuState === 'collapsed' && isHovered) return '16rem';
+    if (menuState === 'collapsed') return '4rem';
+    return '16rem';
+  };
+
   return (
     <ProtectedRoute>
-      <div className="flex h-screen overflow-hidden relative"
-        style={{ background: '#050c12' }}>
-
-        {/* ── BIG vivid gradient orbs ── */}
-        {/* Top-right teal orb */}
-        <div className="fixed pointer-events-none z-0"
-          style={{
-            top: '-120px', right: '-80px',
-            width: '600px', height: '600px',
-            borderRadius: '50%',
-            background: 'radial-gradient(circle at center, rgba(0,255,180,0.22) 0%, rgba(0,220,160,0.12) 30%, transparent 65%)',
-            filter: 'blur(60px)',
-          }} />
-
-        {/* Bottom-left cyan orb */}
-        <div className="fixed pointer-events-none z-0"
-          style={{
-            bottom: '-100px', left: '180px',
-            width: '550px', height: '550px',
-            borderRadius: '50%',
-            background: 'radial-gradient(circle at center, rgba(0,180,255,0.18) 0%, rgba(0,150,220,0.10) 30%, transparent 65%)',
-            filter: 'blur(70px)',
-          }} />
-
-        {/* Center-right pink/purple orb */}
-        <div className="fixed pointer-events-none z-0"
-          style={{
-            top: '35%', right: '15%',
-            width: '400px', height: '400px',
-            borderRadius: '50%',
-            background: 'radial-gradient(circle at center, rgba(168,85,247,0.14) 0%, rgba(255,45,111,0.08) 40%, transparent 65%)',
-            filter: 'blur(80px)',
-          }} />
-
-        {/* Mid-left subtle teal fill */}
-        <div className="fixed pointer-events-none z-0"
-          style={{
-            top: '20%', left: '10%',
-            width: '350px', height: '350px',
-            borderRadius: '50%',
-            background: 'radial-gradient(circle at center, rgba(0,255,180,0.08) 0%, transparent 60%)',
-            filter: 'blur(60px)',
-          }} />
-
-        {/* ── Floating Sidebar ── */}
-        <div className="p-3 flex-shrink-0 relative z-10">
-          <Sidebar />
-        </div>
-
-        {/* ── Main area ── */}
-        <div className="flex-1 flex flex-col overflow-hidden relative z-10 min-w-0">
-          <div className="px-4 pt-3 flex-shrink-0">
-            <Navbar />
-          </div>
-          <main className="flex-1 overflow-y-auto px-4 pb-4 pt-3">
+      <div className="flex h-screen bg-white dark:bg-[#0F0F12]">
+        <Sidebar
+          menuState={menuState}
+          setMenuState={setMenuState}
+          isHovered={isHovered}
+          setIsHovered={setIsHovered}
+          isMobile={isMobile}
+        />
+        <div
+          className="flex flex-1 flex-col transition-all duration-300 ease-in-out min-w-0"
+          style={{ marginLeft: getMarginLeft() }}
+        >
+          <header className="h-16 border-b border-gray-200 dark:border-[#1F1F23] flex-shrink-0 bg-white dark:bg-[#0F0F12]">
+            <Navbar menuState={menuState} setMenuState={setMenuState} isMobile={isMobile} />
+          </header>
+          <main className="flex-1 overflow-auto p-4 sm:p-6 bg-gray-50 dark:bg-[#0F0F12] min-w-0">
             {children}
           </main>
         </div>
