@@ -1,0 +1,20 @@
+# ── Dependencies ─────────────────────────────────────────────────────────────
+node_modules/
+
+# ── Build output ─────────────────────────────────────────────────────────────
+dist/
+
+# ── Environment variables (NEVER push — contains DB password & JWT secret) ───
+.env
+.env.local
+.env.production
+.env.development
+.env.test
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+
+# ── OS ───────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
