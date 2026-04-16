@@ -64,8 +64,9 @@ app.use(errorHandler);
 // ── Start ─────────────────────────────────────────────────────────────────────
 async function bootstrap() {
   await connectDB();
-  app.listen(env.PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${env.PORT}`);
+  const port = env.PORT;
+  app.listen(port, '0.0.0.0', () => {
+    console.log(`🚀 Server running on port ${port}`);
     console.log(`📦 Environment: ${env.NODE_ENV}`);
   });
 }
