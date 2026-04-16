@@ -24,25 +24,14 @@ app.use(morgan(env.isDev() ? 'dev' : 'combined'));
 
 // ── CORS ────────────────────────────────────────────────────────────────────
 app.use(cors({
-  origin: function(origin, callback) {
-    // Allow requests with no origin (mobile apps, curl, etc.)
-    if (!origin) return callback(null, true);
-    const allowed = [
-      env.CLIENT_URL,
-      'http://localhost:3000',
-      'http://localhost:3001',
-      'https://purple-merit-user-management-system.vercel.app',
-    ];
-    if (allowed.includes(origin) || origin.endsWith('.vercel.app')) {
-      callback(null, true);
-    } else {
-      callback(null, true); // Allow all for now — tighten in production
-    }
-  },
-  credentials: true,
+  origin: '*',
+  credentials: false,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+
+// Handle preflight
+app.options('*', cors());
 
 // ── Body parsing ─────────────────────────────────────────────────────────────
 app.use(express.json({ limit: '10kb' }));
